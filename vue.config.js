@@ -119,16 +119,21 @@ module.exports = {
           config.optimization.runtimeChunk('single')
         }
       )
-    config.optimization
-      .minimizer('terser')
-      .tap(args => {
-        Object.assign(args[0].terserOptions.compress, {
-          warnings: false, // 默认false
-          drop_console: true,
-          drop_debugger: true, // 默认true
-          pure_funcs: ['console.log']
+    config.when(process.env.NODE_ENV === 'production', config => {
+      config.optimization
+        .minimizer('terser')
+        .tap(args => {
+          Object.assign(args[0].terserOptions.compress, {
+            warnings: false, // 默认false
+            drop_console: true,
+            drop_debugger: true, // 默认true
+            pure_funcs: ['console.log']
+          })
+          args[0].terserOptions.output = {
+            comments: false
+          }
+          return args
         })
-        return args
-      })
+    })
   }
 }
